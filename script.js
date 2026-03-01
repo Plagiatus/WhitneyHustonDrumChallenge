@@ -1,10 +1,13 @@
 const outputDiv = document.getElementById("result-output")
 
 let touchscreen = false
-if(window.matchMedia("(pointer: coarse)").matches) {
+let wasHit = false
+
+if (window.matchMedia("(pointer: coarse)").matches) {
     touchscreen = true;
     outputDiv.innerText = "Tap to start, tap again to hit!"
     document.getElementById("info").innerText = "Tap to start, tap again to hit!"
+    wasHit = true
 }
 
 const audioContext = new AudioContext()
@@ -14,6 +17,7 @@ loadAudio()
 
 document.addEventListener("keydown", keydown);
 document.addEventListener("touchstart", touchstart);
+document.addEventListener("touchend", ()=>{audioContext.resume()}, {once: true});
 
 function keydown(_ev) {
     if (_ev.key == " ") {
@@ -40,7 +44,6 @@ const target_time = 12.15
 
 let source
 let startTime = 0
-let wasHit = false
 function restart() {
     if (source) {
         source.stop()
@@ -59,7 +62,7 @@ function restart() {
 function hit() {
     if (wasHit) return
     wasHit = true
-    let result =  target_time - (audioContext.currentTime - startTime)
+    let result = target_time - (audioContext.currentTime - startTime)
     console.log("hit", result)
     outputDiv.innerText = (result).toFixed(3) + "s"
     if (result < 0) {
@@ -75,7 +78,8 @@ function hit() {
 update()
 function update() {
     requestAnimationFrame(update)
+    if(!audioContext) return
     let currentTime = target_time - (audioContext.currentTime - startTime)
-    if(currentTime < 0)
-    outputDiv.classList.add("late")
+    if (currentTime < 0)
+        outputDiv.classList.add("late")
 }
