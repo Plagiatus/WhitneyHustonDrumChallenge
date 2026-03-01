@@ -1,20 +1,33 @@
 const outputDiv = document.getElementById("result-output")
-// const audioElement = document.querySelector("audio")
+
+let touchscreen = false
+if(window.matchMedia("(pointer: coarse)").matches) {
+    touchscreen = true;
+    outputDiv.innerText = "Tap to start, tap again to hit!"
+    document.getElementById("info").innerText = "Tap to start, tap again to hit!"
+}
 
 const audioContext = new AudioContext()
-// const track = audioContext.createMediaElementSource(audioElement)
 let buffer
 loadAudio()
 
-// track.connect(audioContext.destination)
 
 document.addEventListener("keydown", keydown);
+document.addEventListener("touchstart", touchstart);
 
 function keydown(_ev) {
     if (_ev.key == " ") {
         restart()
     } else {
         hit()
+    }
+}
+
+function touchstart() {
+    if (wasHit) {
+        restart()
+    } else {
+        hit();
     }
 }
 
